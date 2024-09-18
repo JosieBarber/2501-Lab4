@@ -24,7 +24,7 @@ public class BinPacking {
         //     System.out.println(nums[i]);
         // }
 
-       int [][] bins = frontLoader(3, binCapacity, nums);
+    int [][] bins = frontLoader(3, binCapacity, nums);
 
      System.out.println(Arrays.toString(bins[0]));
      System.out.println(Arrays.toString(bins[1]));
@@ -34,15 +34,11 @@ public class BinPacking {
      for (int i = 0; i < bins[3].length; i++) {
             System.out.println(bins[3][i]);
         }
-
-
-
-
-
     }
 
     //  20 8 12 4 8 15 9 3 1 10
     //  20 6 20 20 20 20 20 20
+    //  20 6 10 10 10 10 10 10
 
 
     //idea one :
@@ -50,64 +46,41 @@ public class BinPacking {
     // if smaller than bin size put biggest num in first bin,
     // if under capacity put second biggest numb
     // continue down list till list ends or bin is full
-    //repeat bins
-    public static int[][]  frontLoader(int numBoxes, int bSize, int[] nums){
+    // repeat bins
+    public static int[][] frontLoader(int numBoxes, int bSize, int[] nums) {
+        int[][] bins = new int[numBoxes + 1][nums.length];
+        int[] remainingCapacity = new int[numBoxes];
+        Arrays.fill(remainingCapacity, bSize);
 
-        int[][] bins = new int[numBoxes + 1][bSize];
-        insertionSort(nums);
-
-        int hi = nums.length-1;// Index or Pointer to highest applicable value
-        int lo = 0;// Index or Pointer to lowest applicable value
-        int workingBox = 0;
         int unusedItemsIndex = 0;
 
-        for (int i = lo; i < hi+1; i++) {
-            if (nums[i] == bSize){
-                if (workingBox != 3) {
-                // System.out.println(workingBox);
-                bins[workingBox][0] = nums[i];
-                workingBox++;
-                } else {
-                    bins[workingBox][unusedItemsIndex] = nums[i];
-                    unusedItemsIndex++;
+        for (int i = nums.length-1; i >= 0; i--) {
+            boolean placed = false;
+
+            for (int j = 0; j < numBoxes; j++) {
+                if (nums[i] <= remainingCapacity[j]) {
+                    bins[j][i] = nums[i];
+                    remainingCapacity[j] -= nums[i];
+                    placed = true;
+                    break;
                 }
             }
 
-            if (nums[i] + nums[lo] == bSize) {
-                bins[workingBox][0] = nums[i];
+            if (!placed) {
+                bins[numBoxes][unusedItemsIndex] = nums[i];
+                unusedItemsIndex++;
             }
         }
 
+        for (int i = 0; i < bins.length-1; i++) {
+            bins[i] = Arrays.stream(bins[i]).filter(x -> x != 0).toArray();
+        }
 
-
-        // for (int i = lo; i < hi; i++) {
-        //     if(nums[i] + nums[hi] <= bSize) {
-
-        //     }
-        // }
-
-
+        bins[3] = Arrays.copyOfRange(bins[3], 0, unusedItemsIndex);
 
 
         return bins;
-
-
     }
-
-
-
-    //idea two:
-    // sort
-    // put biggest and smallest inm bin
-    // go through all
-
-
-
-
-
-
-
-
 
     public static void insertionSort(int[] A) {
         int n = A.length;
@@ -121,7 +94,4 @@ public class BinPacking {
             A[i+1] = key;
         }
     }
-
-
-
 }
