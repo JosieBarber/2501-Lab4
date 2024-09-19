@@ -59,15 +59,9 @@ public class BinPacking {
     */ 
     public static int[][] frontLoader(int numBoxes, int bSize, int[] nums) {
         int[][] bins = new int[numBoxes + 2][nums.length];  //one extra box is for unused imports, second is for capacity
-        int[] remainingCapacity = new int[numBoxes];
-        Arrays.fill(remainingCapacity, bSize);
-
         int unusedItemsIndex = 0;
         // creates count for unused space in bins
-        // also manages return type issues with remainingCapacity[]
-        bins[4][0] = bSize;
-        bins[4][1] = bSize;
-        bins[4][2] = bSize;
+        Arrays.fill(bins[4], bSize);
 
         // traverses each number imported
         for (int i = nums.length-1; i >= 0; i--) {
@@ -75,10 +69,9 @@ public class BinPacking {
 
             // traverses each of the boxes to find space
             for (int j = 0; j < numBoxes; j++) {
-                if (nums[i] <= remainingCapacity[j]) {
+                if (nums[i] <= bins[4][j]) {
                     bins[j][i] = nums[i];
                     bins[4][j] -= nums[i]; //updates unused space
-                    remainingCapacity[j] -= nums[i];
                     placed = true;
                     break;
                 }
